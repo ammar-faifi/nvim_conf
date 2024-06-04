@@ -284,10 +284,11 @@ require('lazy').setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
+        -- See `:help lspconfig-all` for a list of all the pre-configured LSPs
         clangd = {},
         pyright = {},
-        -- See `:help lspconfig-all` for a list of all the pre-configured LSPs
-
+        html = { filetypes = { 'html', 'htmldjango' } },
+        emmet_language_server = {},
         lua_ls = {
           settings = {
             Lua = {
@@ -309,6 +310,9 @@ require('lazy').setup({
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
+        'black', -- format python
+        'isort', -- sort python imports
+        'djlint', -- for htmldjango
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -342,20 +346,12 @@ require('lazy').setup({
     },
     opts = {
       notify_on_error = false,
-      format_on_save = function(bufnr)
-        -- Disable "format_on_save lsp_fallback" for languages that don't
-        -- have a well standardized coding style. You can add additional
-        -- languages here or re-enable it for the disabled ones.
-        local disable_filetypes = { c = true, cpp = true }
-        return {
-          timeout_ms = 500,
-          lsp_fallback = not disable_filetypes[vim.bo[bufnr].filetype],
-        }
-      end,
+      format_on_save = false,
       formatters_by_ft = {
         lua = { 'stylua' },
+        htmldjango = { 'djlint' },
         -- Conform can also run multiple formatters sequentially
-        -- python = { "isort", "black" },
+        python = { 'isort', 'black' },
         --
         -- You can use a sub-list to tell conform to run *until* a formatter
         -- is found.
