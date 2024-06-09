@@ -4,7 +4,6 @@ vim.g.maplocalleader = ' '
 -- Netrw settings
 vim.g.netrw_hide = 1
 vim.g.netrw_banner = 0
-vim.g.netrw_liststyle = 3
 vim.g.netrw_browse_split = 3
 
 vim.g.have_nerd_font = true
@@ -284,6 +283,7 @@ require('lazy').setup({
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
         -- See `:help lspconfig-all` for a list of all the pre-configured LSPs
+        jsonls = {},
         clangd = {},
         pyright = {},
         html = { filetypes = { 'html', 'htmldjango' } },
@@ -349,12 +349,9 @@ require('lazy').setup({
       formatters_by_ft = {
         lua = { 'stylua' },
         htmldjango = { 'djlint' },
-        -- Conform can also run multiple formatters sequentially
+        json = { 'prettierd' },
         python = { 'isort', 'black' },
-        --
-        -- You can use a sub-list to tell conform to run *until* a formatter
-        -- is found.
-        -- javascript = { { "prettierd", "prettier" } },
+        javascript = { { 'prettierd', 'prettier' } },
       },
     },
   },
