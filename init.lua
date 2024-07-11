@@ -4,7 +4,7 @@ vim.g.maplocalleader = ' '
 -- Netrw settings
 vim.g.netrw_hide = 1
 vim.g.netrw_banner = 0
-vim.g.netrw_browse_split = 3
+vim.g.netrw_browse_split = 0
 
 vim.g.have_nerd_font = true
 vim.opt.number = true
@@ -458,13 +458,11 @@ require('lazy').setup({
       -- - sr)'  - [S]urround [R]eplace [)] [']
       require('mini.surround').setup()
 
+      require('mini.bracketed').setup()
+
       -- Simple and easy statusline.
       local statusline = require 'mini.statusline'
       statusline.setup { use_icons = vim.g.have_nerd_font }
-
-      -- You can configure sections in the statusline by overriding their
-      -- default behavior. For example, here we set the section for
-      -- cursor location to LINE:COLUMN
       ---@diagnostic disable-next-line: duplicate-set-field
       statusline.section_location = function()
         return '%2l:%-2v'
