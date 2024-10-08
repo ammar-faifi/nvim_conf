@@ -4,7 +4,7 @@ vim.g.maplocalleader = ' '
 -- Netrw settings
 vim.g.netrw_hide = 1
 vim.g.netrw_banner = 0
-vim.g.netrw_browse_split = 3
+vim.g.netrw_browse_split = 0
 
 vim.g.have_nerd_font = true
 vim.opt.number = true
@@ -111,19 +111,20 @@ require('lazy').setup({
       require('which-key').setup()
 
       -- Document existing key chains
-      require('which-key').register {
-        ['<leader>c'] = { name = '[C]ode', _ = 'which_key_ignore' },
-        ['<leader>d'] = { name = '[D]ocument', _ = 'which_key_ignore' },
-        ['<leader>r'] = { name = '[R]ename', _ = 'which_key_ignore' },
-        ['<leader>s'] = { name = '[S]earch', _ = 'which_key_ignore' },
-        ['<leader>w'] = { name = '[W]orkspace', _ = 'which_key_ignore' },
-        ['<leader>t'] = { name = '[T]oggle', _ = 'which_key_ignore' },
-        ['<leader>h'] = { name = 'Git [H]unk', _ = 'which_key_ignore' },
+      require('which-key').add {
+        {
+          { '<leader>c', desc = 'Code' },
+          { '<leader>d', desc = 'Document' },
+          { '<leader>r', desc = 'Rename' },
+          { '<leader>s', desc = 'Search' },
+          { '<leader>w', desc = 'Workspace' },
+          { '<leader>t', desc = 'Toggle' },
+        },
+        {
+          mode = { 'n', 'v' },
+          { '<leader>h', desc = 'Git Hunk' },
+        },
       }
-      -- visual mode
-      require('which-key').register({
-        ['<leader>h'] = { 'Git [H]unk' },
-      }, { mode = 'v' })
     end,
   },
 
@@ -189,12 +190,12 @@ require('lazy').setup({
           grep_open_files = true,
           prompt_title = 'Live Grep in Open Files',
         }
-      end, { desc = '[S]earch [/] in Open Files' })
+      end, { desc = 'Search in Open Files' })
 
       -- Shortcut for searching your Neovim configuration files
       vim.keymap.set('n', '<leader>sn', function()
         builtin.find_files { cwd = vim.fn.stdpath 'config' }
-      end, { desc = '[S]earch [N]eovim files' })
+      end, { desc = 'Search Neovim files' })
     end,
   },
 
@@ -222,16 +223,16 @@ require('lazy').setup({
             vim.keymap.set('n', keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
           end
           --  To jump back, press <C-t>.
-          map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
-          map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
-          map('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
-          map('<leader>D', require('telescope.builtin').lsp_type_definitions, 'Type [D]efinition')
-          map('<leader>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
-          map('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
-          map('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
-          map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
+          map('gd', require('telescope.builtin').lsp_definitions, 'Goto Definition')
+          map('gr', require('telescope.builtin').lsp_references, 'Goto References')
+          map('gI', require('telescope.builtin').lsp_implementations, 'Goto Implementation')
+          map('<leader>D', require('telescope.builtin').lsp_type_definitions, 'Type Definition')
+          map('<leader>ds', require('telescope.builtin').lsp_document_symbols, 'Document Symbols')
+          map('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, 'Workspace Symbols')
+          map('<leader>rn', vim.lsp.buf.rename, 'Rename')
+          map('<leader>ca', vim.lsp.buf.code_action, 'Code Action')
           map('K', vim.lsp.buf.hover, 'Hover Documentation')
-          map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
+          map('gD', vim.lsp.buf.declaration, 'Goto Declaration')
 
           -- highlight word under cursor
           local client = vim.lsp.get_client_by_id(event.data.client_id)
@@ -261,7 +262,7 @@ require('lazy').setup({
           if client and client.server_capabilities.inlayHintProvider and vim.lsp.inlay_hint then
             map('<leader>th', function()
               vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
-            end, '[T]oggle Inlay [H]ints')
+            end, 'Toggle Inlay Hints')
           end
         end,
       })
@@ -336,7 +337,7 @@ require('lazy').setup({
           require('conform').format { async = true, lsp_fallback = true }
         end,
         mode = '',
-        desc = '[F]ormat buffer',
+        desc = 'Format buffer',
       },
     },
     opts = {
@@ -347,7 +348,7 @@ require('lazy').setup({
         htmldjango = { 'djlint' },
         json = { 'prettierd' },
         python = { 'isort', 'black' },
-        javascript = { { 'prettierd', 'prettier' } },
+        javascript = { 'prettierd' },
       },
     },
   },
@@ -456,14 +457,11 @@ require('lazy').setup({
       -- - sd'   - [S]urround [D]elete [']quotes
       -- - sr)'  - [S]urround [R]eplace [)] [']
       require('mini.surround').setup()
+      require('mini.bracketed').setup()
 
       -- Simple and easy statusline.
       local statusline = require 'mini.statusline'
       statusline.setup { use_icons = vim.g.have_nerd_font }
-
-      -- You can configure sections in the statusline by overriding their
-      -- default behavior. For example, here we set the section for
-      -- cursor location to LINE:COLUMN
       ---@diagnostic disable-next-line: duplicate-set-field
       statusline.section_location = function()
         return '%2l:%-2v'
