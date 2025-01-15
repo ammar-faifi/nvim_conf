@@ -27,6 +27,8 @@ vim.opt.inccommand = 'split'
 vim.opt.cursorline = true
 vim.opt.scrolloff = 0
 
+vim.keymap.set('n', '<leader>gh', ':Gitsigns preview_hunk<CR>')
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 vim.opt.hlsearch = true
@@ -432,7 +434,7 @@ require('lazy').setup({
     'navarasu/onedark.nvim',
     priority = 1000, -- Make sure to load this before all the other start plugins.
     init = function()
-      vim.cmd.colorscheme 'onedark'
+      vim.cmd.colorscheme 'habamax'
       vim.cmd.hi 'Comment gui=none'
     end,
     opts = { style = 'darker', transparent = true },
