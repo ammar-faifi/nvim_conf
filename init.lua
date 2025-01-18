@@ -28,24 +28,26 @@ vim.opt.cursorline = true
 vim.opt.scrolloff = 0
 
 vim.keymap.set('n', '<leader>gh', ':Gitsigns preview_hunk<CR>')
+vim.keymap.set('t', '<Esc>', '<C-\\><C-N>', { desc = 'Terminal escape terminal mode' })
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 vim.opt.hlsearch = true
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
-
--- switch tabs using tab key
 vim.keymap.set('n', '<Tab>', ':tabNext<CR>', { desc = 'Next tab' })
 vim.keymap.set('n', '<S-Tab>', ':tabprevious<CR>', { desc = 'Previous tab' })
 
--- Diagnostic keymaps
-vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous [D]iagnostic message' })
-vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next [D]iagnostic message' })
-vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show diagnostic [E]rror messages' })
-vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
+vim.keymap.set('n', '[d', function()
+  vim.diagnostic.jump { count = -1, float = true }
+end, { desc = 'Go to previous Diagnostic message' })
 
--- Keybinds to make split navigation easier.
---  Use CTRL+<hjkl> to switch between windows
+vim.keymap.set('n', ']d', function()
+  vim.diagnostic.jump { count = 1, float = true }
+end, { desc = 'Go to next Diagnostic message' })
+
+vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show diagnostic Error messages' })
+vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic Quickfix list' })
+
 --  See `:help wincmd` for a list of all window commands
 vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
 vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
@@ -66,19 +68,16 @@ vim.opt.rtp:prepend(lazypath)
 
 -- [[ Configure and install plugins ]]
 --
-require('lazy').setup({
+require('lazy').setup {
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
 
   -- Use `opts = {}` to force a plugin to be loaded.
   --  This is equivalent to:
   --    require('Comment').setup({})
-  { 'numToStr/Comment.nvim', opts = {} }, -- "gc" to comment visual regions/lines
+  { 'numToStr/Comment.nvim', opts = {} },
 
-  -- Here is a more advanced example where we pass configuration
-  -- options to `gitsigns.nvim`. This is equivalent to the following Lua:
-  --    require('gitsigns').setup({ ... })
   -- See `:help gitsigns` to understand what the configuration keys do
-  { -- Adds git related signs to the gutter, as well as utilities for managing changes
+  {
     'lewis6991/gitsigns.nvim',
     opts = {
       signs = {
@@ -91,24 +90,9 @@ require('lazy').setup({
     },
   },
 
-  -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
-  --
-  -- This is often very useful to both group configuration, as well as handle
-  -- lazy loading plugins that don't need to be loaded immediately at startup.
-  --
-  -- For example, in the following configuration, we use:
-  --  event = 'VimEnter'
-  --
-  -- which loads which-key before all the UI elements are loaded. Events can be
-  -- normal autocommands events (`:help autocmd-events`).
-  --
-  -- Then, because we use the `config` key, the configuration only runs
-  -- after the plugin has been loaded:
-  --  config = function() ... end
-
-  { -- Useful plugin to show you pending keybinds.
+  {
     'folke/which-key.nvim',
-    event = 'VimEnter', -- Sets the loading event to 'VimEnter'
+    event = 'VimEnter',
     config = function() -- This is the function that runs, AFTER loading
       require('which-key').setup()
 
@@ -130,23 +114,15 @@ require('lazy').setup({
     end,
   },
 
-  -- NOTE: Plugins can specify dependencies.
-  --
-  { -- Fuzzy Finder (files, lsp, etc)
+  {
     'nvim-telescope/telescope.nvim',
     event = 'VimEnter',
     branch = '0.1.x',
     dependencies = {
       'nvim-lua/plenary.nvim',
-      { -- If encountering errors, see telescope-fzf-native README for installation instructions
+      {
         'nvim-telescope/telescope-fzf-native.nvim',
-
-        -- `build` is used to run some command when the plugin is installed/updated.
-        -- This is only run then, not every time Neovim starts up.
         build = 'make',
-
-        -- `cond` is a condition used to determine whether this plugin should be
-        -- installed and loaded.
         cond = function()
           return vim.fn.executable 'make' == 1
         end,
@@ -158,15 +134,13 @@ require('lazy').setup({
       -- [[ Configure Telescope ]]
       -- See `:help telescope` and `:help telescope.setup()`
       require('telescope').setup {
-        -- You can put your default mappings / updates / etc. in here
         --  All the info you're looking for is in `:help telescope.setup()`
-        --
-        -- defaults = {
-        --   mappings = {
-        --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
-        --   },
-        -- },
-        -- pickers = {}
+        defaults = {
+          mappings = {
+            i = { ['<c-enter>'] = 'to_fuzzy_refine' },
+          },
+        },
+        pickers = {},
         extensions = {
           ['ui-select'] = {
             require('telescope.themes').get_dropdown(),
@@ -180,10 +154,10 @@ require('lazy').setup({
 
       -- See `:help telescope.builtin`
       local builtin = require 'telescope.builtin'
-      vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
-      vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
-      vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
-      vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
+      vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = 'Search Files' })
+      vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = 'Search by Grep' })
+      vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = 'Search Diagnostics' })
+      vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = 'Find existing buffers' })
 
       -- It's also possible to pass additional configuration options.
       --  See `:help telescope.builtin.live_grep()` for information about particular keys
@@ -201,18 +175,14 @@ require('lazy').setup({
     end,
   },
 
-  { -- LSP Configuration & Plugins
+  {
     'neovim/nvim-lspconfig',
     dependencies = {
       -- Automatically install LSPs and related tools to stdpath for Neovim
       { 'williamboman/mason.nvim', config = true }, -- NOTE: Must be loaded before dependants
       'williamboman/mason-lspconfig.nvim',
       'WhoIsSethDaniel/mason-tool-installer.nvim',
-
-      { 'j-hui/fidget.nvim', opts = {} }, -- Useful status updates for LSP.
-
-      -- `neodev` configures Lua LSP for your Neovim config, runtime and plugins
-      -- used for completion, annotations and signatures of Neovim apis
+      { 'j-hui/fidget.nvim', opts = {} },
       { 'folke/neodev.nvim', opts = {} },
     },
     config = function()
@@ -273,13 +243,6 @@ require('lazy').setup({
       local capabilities = vim.lsp.protocol.make_client_capabilities()
       capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
 
-      -- Enable the following language servers
-      --  Add any additional override configuration in the following tables. Available keys are:
-      --  - cmd (table): Override the default command used to start the server
-      --  - filetypes (table): Override the default list of associated filetypes for the server
-      --  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
-      --  - settings (table): Override the default settings passed when initializing the server.
-      --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
         -- See `:help lspconfig-all` for a list of all the pre-configured LSPs
         jsonls = {},
@@ -300,21 +263,19 @@ require('lazy').setup({
         },
       }
 
-      -- Ensure the servers and tools above are installed
       require('mason').setup()
-
-      -- You can add other tools here that you want Mason to install
-      -- for you, so that they are available from within Neovim.
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
-        'stylua', -- Used to format Lua code
-        'black', -- format python
-        'isort', -- sort python imports
-        'djlint', -- for htmldjango
+        'stylua',
+        'black',
+        'isort',
+        'djlint',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
       require('mason-lspconfig').setup {
+        ensure_installed = {},
+        automatic_installation = false,
         handlers = {
           function(server_name)
             local server = servers[server_name] or {}
@@ -329,7 +290,7 @@ require('lazy').setup({
     end,
   },
 
-  { -- Autoformat
+  {
     'stevearc/conform.nvim',
     lazy = false,
     keys = {
@@ -355,7 +316,7 @@ require('lazy').setup({
     },
   },
 
-  { -- Autocompletion
+  {
     'hrsh7th/nvim-cmp',
     event = 'InsertEnter',
     dependencies = {
@@ -401,18 +362,18 @@ require('lazy').setup({
           ['<C-b>'] = cmp.mapping.scroll_docs(-4),
           ['<C-f>'] = cmp.mapping.scroll_docs(4),
           ['<CR>'] = cmp.mapping.confirm { select = true },
-          ['<Tab>'] = cmp.mapping.select_next_item(),
-          ['<S-Tab>'] = cmp.mapping.select_prev_item(),
+          ['<C-n>'] = cmp.mapping.select_next_item(),
+          ['<C-p>'] = cmp.mapping.select_prev_item(),
           ['<C-Space>'] = cmp.mapping.complete {},
 
           -- <c-l> will move you to the right of each of the expansion locations.
           -- <c-h> is similar, except moving you backwards.
-          ['<C-l>'] = cmp.mapping(function()
+          ['<Tab>'] = cmp.mapping(function()
             if luasnip.expand_or_locally_jumpable() then
               luasnip.expand_or_jump()
             end
           end, { 'i', 's' }),
-          ['<C-h>'] = cmp.mapping(function()
+          ['<S-Tab>'] = cmp.mapping(function()
             if luasnip.locally_jumpable(-1) then
               luasnip.jump(-1)
             end
@@ -430,38 +391,15 @@ require('lazy').setup({
     end,
   },
 
-  {
-    'navarasu/onedark.nvim',
-    priority = 1000, -- Make sure to load this before all the other start plugins.
-    init = function()
-      vim.cmd.colorscheme 'habamax'
-      vim.cmd.hi 'Comment gui=none'
-    end,
-    opts = { style = 'darker', transparent = true },
-  },
-
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
 
-  { -- Collection of various small independent plugins/modules
+  {
     'echasnovski/mini.nvim',
     config = function()
-      -- Better Around/Inside textobjects
-      --
-      -- Examples:
-      --  - va)  - [V]isually select [A]round [)]paren
-      --  - yinq - [Y]ank [I]nside [N]ext [']quote
-      --  - ci'  - [C]hange [I]nside [']quote
       require('mini.ai').setup { n_lines = 500 }
-
-      -- Add/delete/replace surroundings (brackets, quotes, etc.)
-      --
-      -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
-      -- - sd'   - [S]urround [D]elete [']quotes
-      -- - sr)'  - [S]urround [R]eplace [)] [']
       require('mini.surround').setup()
       require('mini.bracketed').setup()
 
-      -- Simple and easy statusline.
       local statusline = require 'mini.statusline'
       statusline.setup { use_icons = vim.g.have_nerd_font }
       ---@diagnostic disable-next-line: duplicate-set-field
@@ -471,7 +409,7 @@ require('lazy').setup({
     end,
   },
 
-  { -- Highlight, edit, and navigate code
+  {
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
     opts = {
@@ -492,32 +430,8 @@ require('lazy').setup({
       require('nvim-treesitter.install').prefer_git = true
       ---@diagnostic disable-next-line: missing-fields
       require('nvim-treesitter.configs').setup(opts)
-
-      --    - Incremental selection: Included, see `:help nvim-treesitter-incremental-selection-mod`
-      --    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
-      --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
     end,
   },
-
-  { import = 'custom.plugins' },
-}, {
-  ui = {
-    icons = vim.g.have_nerd_font and {} or {
-      cmd = '⌘',
-      config = '🛠',
-      event = '📅',
-      ft = '📂',
-      init = '⚙',
-      keys = '🗝',
-      plugin = '🔌',
-      runtime = '💻',
-      require = '🌙',
-      source = '📄',
-      start = '🚀',
-      task = '📌',
-      lazy = '💤 ',
-    },
-  },
-})
+}
 
 -- vim: ts=2 sts=2 sw=2 et
