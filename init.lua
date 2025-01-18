@@ -190,7 +190,7 @@ require('lazy').setup {
 
           -- highlight word under cursor
           local client = vim.lsp.get_client_by_id(event.data.client_id)
-          if false and client and client.server_capabilities.documentHighlightProvider then
+          if client and client.server_capabilities.documentHighlightProvider then
             map('gh', vim.lsp.buf.document_highlight, 'Highlight under cursor')
             map('gH', vim.lsp.buf.clear_references, 'Clear highlight')
           end
