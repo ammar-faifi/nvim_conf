@@ -25,6 +25,7 @@ vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 vim.opt.inccommand = 'split'
 vim.opt.cursorline = true
 vim.opt.scrolloff = 0
+vim.cmd 'colorscheme habamax'
 vim.api.nvim_set_hl(0, 'Normal', { bg = 'NONE' })
 
 vim.keymap.set('n', '<leader>gh', ':Gitsigns preview_hunk<CR>')
@@ -326,15 +327,15 @@ require('lazy').setup {
           ['<C-k>'] = cmp.mapping.scroll_docs(-4),
           ['<C-j>'] = cmp.mapping.scroll_docs(4),
           ['<CR>'] = cmp.mapping.confirm { select = true },
-          ['<C-n>'] = cmp.mapping.select_next_item(),
-          ['<C-p>'] = cmp.mapping.select_prev_item(),
+          ['<Tab>'] = cmp.mapping.select_next_item(),
+          ['<S-Tab>'] = cmp.mapping.select_prev_item(),
           ['<C-Space>'] = cmp.mapping.complete {},
-          ['<Tab>'] = cmp.mapping(function()
+          ['<C-n>'] = cmp.mapping(function()
             if luasnip.expand_or_locally_jumpable() then
               luasnip.expand_or_jump()
             end
           end, { 'i', 's' }),
-          ['<S-Tab>'] = cmp.mapping(function()
+          ['<C-p>'] = cmp.mapping(function()
             if luasnip.locally_jumpable(-1) then
               luasnip.jump(-1)
             end
