@@ -25,15 +25,15 @@ vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 vim.opt.inccommand = 'split'
 vim.opt.cursorline = true
 vim.opt.scrolloff = 0
+vim.opt.hlsearch = true
 vim.cmd 'colorscheme habamax'
 vim.api.nvim_set_hl(0, 'Normal', { bg = 'NONE' })
 
+
+--  See `:help vim.keymap.set()`
 vim.keymap.set('n', '<leader>gh', ':Gitsigns preview_hunk<CR>')
 vim.keymap.set('t', '<Esc>', '<C-\\><C-N>', { desc = 'Terminal escape terminal mode' })
 
--- [[ Basic Keymaps ]]
---  See `:help vim.keymap.set()`
-vim.opt.hlsearch = true
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 vim.keymap.set('n', '<Tab>', ':tabNext<CR>', { desc = 'Next tab' })
 vim.keymap.set('n', '<S-Tab>', ':tabprevious<CR>', { desc = 'Previous tab' })
@@ -47,9 +47,7 @@ vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right win
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
--- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
-
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -409,8 +407,6 @@ require('lazy').setup {
 
   { -- Add indentation guides even on blank lines
     'lukas-reineke/indent-blankline.nvim',
-    -- Enable `lukas-reineke/indent-blankline.nvim`
-    -- See `:help ibl`
     main = 'ibl',
     opts = {},
   },
