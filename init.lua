@@ -29,7 +29,6 @@ vim.opt.hlsearch = true
 vim.cmd 'colorscheme habamax'
 vim.api.nvim_set_hl(0, 'Normal', { bg = 'NONE' })
 
-
 --  See `:help vim.keymap.set()`
 vim.keymap.set('n', '<leader>gh', ':Gitsigns preview_hunk<CR>')
 vim.keymap.set('t', '<Esc>', '<C-\\><C-N>', { desc = 'Terminal escape terminal mode' })
@@ -46,6 +45,8 @@ vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left wind
 vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+
+vim.keymap.set('n', '<leader>bd', ':bp | bd# <CR>', { desc = 'Delete buffer and switch to previous' })
 
 --  See `:help lua-guide-autocommands`
 -- [[ Install `lazy.nvim` plugin manager ]]
@@ -275,6 +276,8 @@ require('lazy').setup {
         json = { 'prettierd' },
         python = { 'isort', 'black' },
         javascript = { 'prettierd' },
+        javascriptreact = { 'prettierd' },
+        typst = { 'prettypst' },
       },
     },
   },
@@ -383,6 +386,8 @@ require('lazy').setup {
 
   {
     'nvim-treesitter/nvim-treesitter',
+    lazy = false,
+    branch = 'main',
     build = ':TSUpdate',
     opts = {
       ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'vim', 'vimdoc' },
@@ -401,8 +406,16 @@ require('lazy').setup {
       -- Prefer git instead of curl in order to improve connectivity in some environments
       require('nvim-treesitter.install').prefer_git = true
       ---@diagnostic disable-next-line: missing-fields
-      require('nvim-treesitter.configs').setup(opts)
+      require('nvim-treesitter.config').setup(opts)
     end,
+
+    dependencies = {
+      {
+        'OXY2DEV/markview.nvim',
+        lazy = false,
+        priority = 49,
+      },
+    },
   },
 
   { -- Add indentation guides even on blank lines
