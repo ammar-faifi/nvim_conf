@@ -440,6 +440,8 @@ require('lazy').setup {
     main = 'ibl',
     opts = {},
   },
+  -- require 'plugins.debug',
+  -- require 'plugins.lint',
 }
 
 -- vim: ts=2 sts=2 sw=2 et
