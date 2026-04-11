@@ -29,6 +29,8 @@ vim.opt.hlsearch = true
 vim.cmd 'colorscheme habamax'
 vim.api.nvim_set_hl(0, 'Normal', { bg = 'NONE' })
 
+vim.cmd 'packadd nvim.undotree'
+
 --  See `:help vim.keymap.set()`
 vim.keymap.set('n', '<leader>gh', ':Gitsigns preview_hunk<CR>')
 vim.keymap.set('t', '<Esc>', '<C-\\><C-N>', { desc = 'Terminal escape terminal mode' })
@@ -46,7 +48,22 @@ vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right win
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
-vim.keymap.set('n', '<leader>bd', ':bp | bd# <CR>', { desc = 'Delete buffer and switch to previous' })
+vim.keymap.set('n', 'ZB', ':bp | bd# <CR>', { desc = 'Delete buffer and switch to previous' })
+
+vim.api.nvim_create_autocmd('LspProgress', {
+  buffer = buf,
+  callback = function(ev)
+    local value = ev.data.params.value
+    vim.api.nvim_echo({ { value.message or 'done' } }, false, {
+      id = 'lsp.' .. ev.data.params.token,
+      kind = 'progress',
+      source = 'vim.lsp',
+      title = value.title,
+      status = value.kind ~= 'end' and 'running' or 'success',
+      percent = value.percentage,
+    })
+  end,
+})
 
 --  See `:help lua-guide-autocommands`
 -- [[ Install `lazy.nvim` plugin manager ]]
